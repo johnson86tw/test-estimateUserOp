@@ -31,7 +31,7 @@ contract DemoTest is Test {
         PackedUserOperation memory userOp = _buildUserOp(signerKey, address(demo), abi.encodeCall(demo.setCaller, ()));
         _handleUserOp(userOp);
 
-        assertEq(demo.caller(), address(entryPoint));
+        assertEq(demo.caller(), address(demo));
     }
 
     function _buildUserOp(uint256 privateKey, address sender, bytes memory callData)

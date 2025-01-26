@@ -8,13 +8,30 @@ contract Demo is IAccount {
     address public callerFromValidation;
     address public caller;
 
+    bytes32 private constant MAIN_STORAGE_SLOT = 0x41a2efc794119f946ab405955f96dacdfa298d25a3ae81c9a8cc1dea5771a900;
+
     error NotFromEntryPoint();
     error ZeroAddress();
+
+    struct MainStorage {
+        address callerFromValidationMain;
+    }
+
+    function _getMainStorage() private pure returns (MainStorage storage $) {
+        assembly {
+            $.slot := MAIN_STORAGE_SLOT
+        }
+    }
 
     function setCaller() public {
         if (callerFromValidation == address(0)) {
             revert ZeroAddress();
         }
+
+        if (_getMainStorage().callerFromValidationMain == address(0)) {
+            revert ZeroAddress();
+        }
+
         caller = callerFromValidation;
     }
 
@@ -24,7 +41,11 @@ contract Demo is IAccount {
         payPrefund(missingAccountFunds)
         returns (uint256 validationData)
     {
-        callerFromValidation = msg.sender;
+        callerFromValidation = userOp.sender;
+
+        MainStorage storage $ = _getMainStorage();
+        $.callerFromValidationMain = userOp.sender;
+
         return 0;
     }
 

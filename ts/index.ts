@@ -6,12 +6,10 @@ const chainId = '11155111'
 const CLIENT_URL = 'http://localhost:8545'
 const BUNDLER_URL = 'http://localhost:4337'
 
-const PRIVATE_KEY = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
-
 const client = new JsonRpcProvider(CLIENT_URL)
 
 // Demo contract address
-const DEMO_ADDRESS = '0xa985BcF8F46EB7A68a0e9406d6B7CAE2805f2101'
+const DEMO_ADDRESS = '0xA8059021CA523A9F11BB6c8E7540c908080c535C'
 
 console.log('Sending user operation...')
 const op = await sendop({
