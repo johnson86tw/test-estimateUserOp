@@ -31,16 +31,23 @@ contract Demo2 is IAccount {
         bytes32 ethHash = ECDSA.toEthSignedMessageHash(userOpHash);
         address signer = ECDSA.recover(ethHash, userOp.signature);
 
-        // pass
+        // (1) pass
         // callerFromValidation = signer;
         // return 0;
 
-        // fail to estimateUserOpGas with error ZeroAddress()
+        // (2) fail to estimateUserOp with error ZeroAddress()
         if (signer == 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266) {
             callerFromValidation = signer;
             return 0;
         }
         return 1;
+
+        // (3) fail to estimateUserOp with error InvalidSigner()
+        // if (signer == 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266) {
+        //     callerFromValidation = signer;
+        //     return 0;
+        // }
+        // revert InvalidSigner();
     }
 
     modifier payPrefund(uint256 missingAccountFunds) {
