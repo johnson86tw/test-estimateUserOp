@@ -1,4 +1,4 @@
-import { Contract, Interface, JsonRpcProvider, toBeHex, type ContractRunner } from 'ethers'
+import { Contract, getBytes, Interface, JsonRpcProvider, toBeHex, Wallet, type ContractRunner } from 'ethers'
 import { AltoBundler } from './bundler'
 import { ENTRY_POINT_V07, sendop, type Execution } from './sendop'
 
@@ -8,8 +8,13 @@ const BUNDLER_URL = 'http://localhost:4337'
 
 const client = new JsonRpcProvider(CLIENT_URL)
 
-// Demo contract address
-const DEMO_ADDRESS = '0xA8059021CA523A9F11BB6c8E7540c908080c535C'
+const PRIVATE_KEY = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
+const signer = new Wallet(PRIVATE_KEY, client)
+
+// *********************************************************
+// ***************** Demo contract address *****************
+// *********************************************************
+const DEMO_ADDRESS = '0x3717112B8A098816F6d12cBfE081A9869F7CC5e0'
 
 console.log('Sending user operation...')
 const op = await sendop({
@@ -37,7 +42,7 @@ const op = await sendop({
 			return '0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c'
 		},
 		async getSignature(userOpHash: string) {
-			return '0x'
+			return await signer.signMessage(getBytes(userOpHash))
 		},
 	},
 })

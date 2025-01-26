@@ -3,8 +3,9 @@ pragma solidity ^0.8.13;
 
 import {IAccount} from "@account-abstraction/contracts/interfaces/IAccount.sol";
 import {PackedUserOperation} from "@account-abstraction/contracts/interfaces/PackedUserOperation.sol";
+import {ECDSA} from "solady/utils/ECDSA.sol";
 
-contract Demo is IAccount {
+contract Demo2 is IAccount {
     error NotFromEntryPoint();
     error ZeroAddress();
 
@@ -19,14 +20,27 @@ contract Demo is IAccount {
         caller = callerFromValidation;
     }
 
+    error InvalidSigner();
+
     function validateUserOp(PackedUserOperation calldata userOp, bytes32 userOpHash, uint256 missingAccountFunds)
         external
         onlyEntryPoint
         payPrefund(missingAccountFunds)
         returns (uint256 validationData)
     {
-        callerFromValidation = userOp.sender;
-        return 0;
+        bytes32 ethHash = ECDSA.toEthSignedMessageHash(userOpHash);
+        address signer = ECDSA.recover(ethHash, userOp.signature);
+
+        // pass
+        // callerFromValidation = signer;
+        // return 0;
+
+        // fail to estimateUserOpGas with error ZeroAddress()
+        if (signer == 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266) {
+            callerFromValidation = signer;
+            return 0;
+        }
+        return 1;
     }
 
     modifier payPrefund(uint256 missingAccountFunds) {
