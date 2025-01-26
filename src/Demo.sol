@@ -8,7 +8,13 @@ contract Demo is IAccount {
     address public callerFromValidation;
     address public caller;
 
+    error NotFromEntryPoint();
+    error ZeroAddress();
+
     function setCaller() public {
+        if (callerFromValidation == address(0)) {
+            revert ZeroAddress();
+        }
         caller = callerFromValidation;
     }
 
@@ -21,8 +27,6 @@ contract Demo is IAccount {
         callerFromValidation = msg.sender;
         return 0;
     }
-
-    error NotFromEntryPoint();
 
     modifier payPrefund(uint256 missingAccountFunds) {
         _;
