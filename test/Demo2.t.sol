@@ -28,8 +28,10 @@ contract Demo2Test is Test {
     }
 
     function test_validateUserOp() public {
-        (address signer, uint256 signerKey) = makeAddrAndKey("signer");
-        PackedUserOperation memory userOp = _buildUserOp(signerKey, address(demo2), abi.encodeCall(demo2.setCaller, ()));
+        uint256 privateKey = 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80;
+        address signer = vm.addr(privateKey);
+        PackedUserOperation memory userOp =
+            _buildUserOp(privateKey, address(demo2), abi.encodeCall(demo2.setCaller, ()));
         _handleUserOp(userOp);
 
         assertEq(demo2.caller(), address(signer));
