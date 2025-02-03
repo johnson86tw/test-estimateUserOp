@@ -14,7 +14,7 @@ const signer = new Wallet(PRIVATE_KEY, client)
 // *********************************************************
 // ***************** Demo contract address *****************
 // *********************************************************
-const DEMO_ADDRESS = '0x9316e3f56e5502C32ff414B60A16160DeE3C7F6a'
+const DEMO_ADDRESS = '0x227885f666bdE85b1D9DAB632f6Ff470d6d8be6E'
 
 console.log('Sending user operation...')
 const op = await sendop({
