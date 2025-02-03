@@ -1,13 +1,40 @@
 # test-estimateUserOp
 
-- 在 validation phase 寫入 storage，estimateUserOp 會讀更新的 storage 值來做模擬 execution，參考 Demo.sol。
-- estimateUserOp 時 signature 來自 dummy signature，recover 的地址不是真正的地址，validateUserOp 若 revert，estimateUserOp 會失敗，若是 signature 驗證錯誤的問題，要 return 1，bundler 知道自己用的 signature 是假的，所以會接續模擬 estimateUserOp，參考 Demo2.sol。
-- 
+- Demo.sol: 在 validation phase 寫入 storage，estimateUserOp 會讀更新的 storage 值來做模擬 execution。
+- Demo2.sol: estimateUserOp 時 signature 來自 dummy signature，recover 的地址不是真正的地址，validateUserOp 若 revert，estimateUserOp 會失敗，若是 signature 驗證錯誤的問題，要 return 1，bundler 知道自己用的 signature 是假的，所以會接續模擬 estimateUserOp。
+- Demo3.sol: Demo2 問題的解法之一，將地址存在 nonceKey，於 validateUserOp 時做驗證，用 nonceKey 存的地址來做暫存，讓 estimateUserOpGas 能成功。
 
 
 ## Test
 
 - 記得填 .env
+- Demo 和 Demo2 共用 ts/index.ts，Demo3 用 ts/demo3.ts
+
+```
+Test address: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+Test privateKey: 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+```
+
+```
+forge test --mp test/Demo1.t.sol
+forge test --mp test/Demo2.t.sol
+forge test --mp test/Demo3.t.sol
+```
+
+
+### Demo 3
+
+- Demo2 的解決方案：將 signer address 存在 nonceKey，使用這個 signer address （而不是 recovered signer address）做權限驗證，並將 signer address 存入 transient storage，最後驗證 signature 是否由 signer 所簽。
+
+```
+docker compose up -d
+
+forge script script/Demo3.s.sol --rpc-url http://localhost:8545 --broadcast --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+```
+
+```
+bun run ts/demo3.ts
+```
 
 ### Demo 2
 
